@@ -128,15 +128,13 @@ class PriorityMarkerLayer extends StatefulWidget {
 }
 
 class _PriorityMarkerLayerState extends State<PriorityMarkerLayer> {
-  final Map<int, double> _opacity = {};
-
   @override
   Widget build(BuildContext context) {
     final map = FlutterMapState.of(context);
     final markerWidgets = <Widget>[];
 
     for (final marker in widget.markers) {
-      _opacity[marker.id] = map.zoom > marker.priority ? 1.0 : 0.0;
+      if (map.zoom < marker.priority) continue;
 
       final pxPoint = map.project(marker.point);
 
@@ -179,11 +177,7 @@ class _PriorityMarkerLayerState extends State<PriorityMarkerLayer> {
           height: marker.height,
           left: pos.x - rightPortion,
           top: pos.y - bottomPortion,
-          child: AnimatedOpacity(
-            opacity: _opacity[marker.id] ?? 0.0,
-            duration: const Duration(microseconds: 500),
-            child: markerWidget,
-          ),
+          child: markerWidget,
         ),
       );
     }
